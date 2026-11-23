@@ -4,13 +4,25 @@ import type { EChartsCoreOption, EChartsType } from 'echarts/core';
 import { BarChart, LineChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, AriaComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import { compact, colors, countries, number, palette } from './data';
+import { compact, countries, number } from './data';
+import { useChartTheme } from './theme';
 import world from './world.json';
 
 echarts.use([LineChart, PieChart, BarChart, GridComponent, TooltipComponent, AriaComponent, CanvasRenderer]);
 
 const font = 'Manrope Variable, system-ui, sans-serif';
-const tooltip = { backgroundColor: '#fff', borderColor: '#e7ebf4', padding: [9, 13], textStyle: { color: '#283550', fontFamily: font, fontSize: 12 }, confine: true, valueFormatter: (value: unknown) => number(Number(value), 1) };
+type ChartTheme = ReturnType<typeof useChartTheme>;
+
+function tooltip(theme: ChartTheme) {
+  return {
+    backgroundColor: theme.tooltipSurface,
+    borderColor: theme.tooltipBorder,
+    padding: [9, 13],
+    textStyle: { color: theme.tooltipText, fontFamily: font, fontSize: 12 },
+    confine: true,
+    valueFormatter: (value: unknown) => number(Number(value), 1),
+  };
+}
 
 function Chart({ option, label, className = '' }: { option: EChartsCoreOption; label: string; className?: string }) {
   const container = useRef<HTMLDivElement>(null);
@@ -31,16 +43,27 @@ function Chart({ option, label, className = '' }: { option: EChartsCoreOption; l
 }
 
 export type Line = { name: string; values: number[]; color?: string };
-const lineColor = (line: Line, index: number) => line.color ?? (line.name === 'Outgoing' ? colors.outgoing : line.name === 'Transit' ? colors.purple : palette[index % palette.length]);
+function lineColor(line: Line, index: number, { colors, palette }: ChartTheme) {
+  if (line.color) return line.color;
+  if (line.name === 'Incoming') return colors.incoming;
+  if (line.name === 'Outgoing') return colors.outgoing;
+  if (line.name === 'Transit') return colors.purple;
+  return palette[index % palette.length];
+}
 
 export function TrendChart({ labels, series, metric, mode = 'line' }: { labels: string[]; series: Line[]; metric: string; mode?: 'line' | 'bar' }) {
+  const theme = useChartTheme();
   return <Chart label={metric + ' by period for ' + series.map(item => item.name).join(' and ')} className="trend-canvas" option={{
     grid: { top: 19, bottom: 25, left: 5, right: 12, outerBoundsMode: 'same', outerBoundsContain: 'axisLabel' },
-    tooltip: { ...tooltip, trigger: 'axis', axisPointer: { type: mode === 'line' ? 'line' : 'shadow', lineStyle: { color: '#cbd3e7', type: 'dashed' } } },
-    xAxis: { type: 'category', data: labels, boundaryGap: mode === 'bar', axisLine: { lineStyle: { color: '#e7edf6' } }, axisTick: { show: false }, axisLabel: { color: '#64748b', fontSize: 11, hideOverlap: true, margin: 12, interval: labels.length > 11 ? Math.ceil(labels.length / 7) - 1 : 'auto' } },
-    yAxis: { type: 'value', min: 0, splitNumber: 4, minInterval: 1, axisLabel: { color: '#64748b', fontSize: 11, formatter: (value: number) => compact(value, 0) }, splitLine: { lineStyle: { color: '#e8edf5', type: 'dashed' } } },
+    tooltip: {
+      ...tooltip(theme),
+      trigger: 'axis',
+      axisPointer: { type: mode === 'line' ? 'line' : 'shadow', lineStyle: { color: theme.guide, type: 'dashed' }, shadowStyle: { color: theme.band } },
+    },
+    xAxis: { type: 'category', data: labels, boundaryGap: mode === 'bar', axisLine: { lineStyle: { color: theme.grid } }, axisTick: { show: false }, axisLabel: { color: theme.axis, fontSize: 11, hideOverlap: true, margin: 12, interval: labels.length > 11 ? Math.ceil(labels.length / 7) - 1 : 'auto' } },
+    yAxis: { type: 'value', min: 0, splitNumber: 4, minInterval: 1, axisLabel: { color: theme.axis, fontSize: 11, formatter: (value: number) => compact(value, 0) }, splitLine: { lineStyle: { color: theme.grid, type: 'dashed' } } },
     series: series.map((line, index) => {
-      const color = lineColor(line, index);
+      const color = lineColor(line, index, theme);
       if (mode === 'bar') return { type: 'bar', name: line.name, data: line.values, barMaxWidth: 23, itemStyle: { color, borderRadius: [4, 4, 0, 0] } };
       return {
         type: 'line', name: line.name, data: line.values, smooth: 0.35, showSymbol: labels.length === 1, symbolSize: 7,
@@ -52,7 +75,8 @@ export function TrendChart({ labels, series, metric, mode = 'line' }: { labels: 
 }
 
 export function Legend({ series }: { series: Line[] }) {
-  return <div className="chart-legend">{series.map((line, index) => <span key={line.name}><i style={{ background: lineColor(line, index) }} />{line.name}</span>)}</div>;
+  const theme = useChartTheme();
+  return <div className="chart-legend">{series.map((line, index) => <span key={line.name}><i style={{ background: lineColor(line, index, theme) }} />{line.name}</span>)}</div>;
 }
 
 export function Sparkline({ values, color, id }: { values: number[]; color: string; id: string }) {
@@ -69,12 +93,13 @@ export function Sparkline({ values, color, id }: { values: number[]; color: stri
 
 export type PieItem = { name: string; value: number; color?: string };
 export function Donut({ data, total, caption }: { data: PieItem[]; total: string; caption: string }) {
+  const theme = useChartTheme();
   return <div className="donut-shell">
     <Chart className="donut-canvas" label={caption + ' distribution'} option={{
-      color: palette,
-      tooltip: { ...tooltip, trigger: 'item' },
+      color: theme.palette,
+      tooltip: { ...tooltip(theme), trigger: 'item' },
       series: [{ type: 'pie', radius: ['66%', '90%'], center: ['50%', '50%'], startAngle: 96, padAngle: data.length > 1 ? 3 : 0,
-        data: data.some(item => item.value) ? data.map(item => ({ name: item.name, value: item.value, itemStyle: { color: item.color } })) : [{ name: 'No traffic', value: 1, itemStyle: { color: '#e9edf6' }, tooltip: { show: false } }],
+        data: data.some(item => item.value) ? data.map(item => ({ name: item.name, value: item.value, itemStyle: { color: item.color } })) : [{ name: 'No traffic', value: 1, itemStyle: { color: theme.empty }, tooltip: { show: false } }],
         itemStyle: { borderRadius: 5 }, label: { show: false }, emphasis: { scaleSize: 5 },
       }],
     }} />
@@ -124,20 +149,20 @@ export function TrafficMap({ values, selected, onSelect }: { values: Map<string,
   const ranked = countries.filter(item => (values.get(item.name) ?? 0) > 0);
   const maximum = Math.max(1, ...values.values());
   return <svg viewBox="9 8 706 278" className="traffic-map" aria-label="Traffic corridors connecting Pakistan with partner countries">
-    <path d={land} fill="#e7edf9" stroke="#fafdff" strokeWidth=".8" />
-    <path d={pak?.d} fill="#455af2" stroke="#fff" strokeWidth=".7" />
-    {ranked.map(country => <path key={country.code} d={routePath(project(country.coords))} fill="none" stroke="#667bff" strokeWidth={selected === country.name ? 2 : 1.15} strokeOpacity={selected === country.name ? 1 : '.42'} />)}
+    <path d={land} fill="var(--map-land)" stroke="var(--map-boundary)" strokeWidth=".8" />
+    <path d={pak?.d} fill="var(--map-hub)" stroke="var(--map-point-outline)" strokeWidth=".7" />
+    {ranked.map(country => <path key={country.code} d={routePath(project(country.coords))} fill="none" stroke="var(--map-route)" strokeWidth={selected === country.name ? 2 : 1.15} strokeOpacity={selected === country.name ? 1 : '.52'} />)}
     {ranked.map(country => {
       const [x, y] = project(country.coords);
       const calls = values.get(country.name) ?? 0;
       const radius = 3.6 + 2.8 * calls / maximum;
       return <g key={country.code} role="button" tabIndex={0} aria-label={'Filter to ' + country.name} aria-pressed={selected === country.name} className="map-point" onClick={() => onSelect(country.name)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelect(country.name); } }}>
         <title>{country.name + ' · ' + number(calls) + ' calls'}</title>
-        <circle cx={x} cy={y} r={radius + 3} fill="#6277ff" fillOpacity=".2" />
-        <circle cx={x} cy={y} r={radius} fill="#576cf5" stroke="#fff" strokeWidth="1.35" />
+        <circle cx={x} cy={y} r={radius + 3} fill="var(--map-partner)" fillOpacity=".2" />
+        <circle cx={x} cy={y} r={radius} fill="var(--map-partner)" stroke="var(--map-point-outline)" strokeWidth="1.35" />
       </g>;
     })}
-    <circle cx={hub[0]} cy={hub[1]} r="11" fill="#556cff" fillOpacity=".22" />
-    <circle cx={hub[0]} cy={hub[1]} r="5" fill="#455af2" stroke="#fff" strokeWidth="1.6" />
+    <circle cx={hub[0]} cy={hub[1]} r="11" fill="var(--map-hub)" fillOpacity=".22" />
+    <circle cx={hub[0]} cy={hub[1]} r="5" fill="var(--map-hub)" stroke="var(--map-point-outline)" strokeWidth="1.6" />
   </svg>;
 }

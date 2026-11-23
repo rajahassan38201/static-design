@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, Menu, Network, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, X,
+  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, Menu, Moon, Network, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, Sun, X,
   type LucideIcon,
 } from 'lucide-react';
 import '@fontsource-variable/manrope';
 import voxiaLogo from '../VOXIA Logo.png';
 import ahamsonLogo from '../Ahamson logo.png';
+import './theme.css';
 import './styles.css';
 import { ActiveAlerts, AlertsView, useAlerts } from './alerts';
 import { CountriesView, industryRows, IndustryView, OperatorsView, Overview, TrafficDetails } from './analytics';
 import { countries, downloadCsv, earliest, emptyFilters, group, latest, ldis, navigation, operators, preset, previousRange, rangeLabel, selectRecords, type Filters, type Page, type Range } from './data';
 import { DataView, initialBatches } from './ingestion';
+import { ThemeContext, useThemePreference } from './theme';
 import { Modal, Select } from './ui';
 
 const icons: Record<Page, LucideIcon> = {
@@ -62,6 +64,7 @@ function FilterPicker({ value, page, onApply }: { value: Filters; page: Page; on
 }
 
 function App() {
+  const { theme, toggleTheme } = useThemePreference();
   const [page, setPage] = useState<Page>(getPage);
   const [range, setRange] = useState(() => preset(14));
   const [filters, setFilters] = useState<Filters>(emptyFilters);
@@ -135,13 +138,16 @@ function App() {
   };
   const props = { rows, previous, range, filters, onCountry, page };
 
-  return <div className="app-shell">
+  return <ThemeContext.Provider value={theme}><div className="app-shell">
     <a href="#main-content" className="skip-link" onClick={event => { event.preventDefault(); document.getElementById('main-content')?.focus(); }}>Skip to content</a>
     {drawer && <button className="drawer-overlay" onClick={() => setDrawer(false)} aria-label="Close navigation" />}
     <aside ref={nav} className={'sidebar' + (drawer ? ' is-open' : '')} id="navigation" aria-label="Sidebar">
       <div className="brand-row">
         <a className="brand" href="#overview" onClick={() => setDrawer(false)}>
-          <span className="brand-logo"><img src={voxiaLogo} alt="VOXIA" width="2172" height="724" /></span>
+          <span className="brand-logo">
+            <img className="brand-logo-art" src={voxiaLogo} alt="VOXIA" width="2172" height="724" />
+            <img className="brand-logo-wordmark" src={voxiaLogo} alt="" aria-hidden="true" width="2172" height="724" />
+          </span>
         </a>
         <button className="icon-button sidebar-close" aria-label="Close navigation" onClick={() => setDrawer(false)}><X size={20} /></button>
       </div>
@@ -168,6 +174,9 @@ function App() {
         </div>
         <div className="topbar-actions">
           <span className="demo-label"><i /> Demo data</span>
+          <button type="button" className="icon-button theme-toggle" role="switch" aria-label="Dark mode" aria-checked={theme === 'dark'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+          </button>
           <div className="popover-anchor" data-popover>
             <button className="icon-button bell-button" aria-label={'Notifications, ' + active + ' active'} aria-expanded={popup === 'notifications'} onClick={() => toggle('notifications')}><Bell size={20} />{active > 0 && <i />}</button>
             {popup === 'notifications' && <div className="popover notification-popover"><h2>Notifications</h2><ActiveAlerts alarms={alerts.alarms} compactView /><a className="text-link" href="#alerts" onClick={() => setPopup(null)}>Open alert console</a></div>}
@@ -213,7 +222,7 @@ function App() {
       <div className="about-copy"><p>The dashboards, operator assignments, PTA comparison, and alarms use synthetic data. Use the reporting period and traffic filters to explore the sample network.</p><p>In the data workspace, CSV validation runs locally. Alert rules and alarm states are stored in this browser.</p></div>
       <div className="dialog-actions"><button className="button primary" onClick={() => setAbout(false)}>Done</button></div>
     </Modal>}
-  </div>;
+  </div></ThemeContext.Provider>;
 }
 
 createRoot(document.getElementById('root')!).render(<App />);

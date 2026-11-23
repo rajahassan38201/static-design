@@ -1,0 +1,129 @@
+:root {
+  color-scheme: light;
+  --bg: #f4f6fb;
+  --paper: #fff;
+  --raised: #fff;
+  --surface-muted: #f5f7fc;
+  --surface-hover: #f1f4fc;
+  --topbar-bg: #fffffffa;
+  --ink: #182541;
+  --text: #465773;
+  --muted: #61708a;
+  --subtle: #647189;
+  --hairline: #e7ecf5;
+  --control-border: #e1e7f3;
+  --hover-border: #bfcaf4;
+  --scroll-thumb: #c4cde0;
+  --accent: #384bd8;
+  --accent-hover: #263cc0;
+  --accent-soft: #eef1ff;
+  --accent-soft-hover: #dfe6ff;
+  --accent-border: #dce3ff;
+  --focus: #5368f5;
+  --primary: #4256e7;
+  --primary-gradient: linear-gradient(145deg, #4b5ee9, #3d4fe1);
+  --primary-hover: #3548d9;
+  --primary-shadow: 0 3px 8px #3d50e630;
+  --shadow: 0 2px 5px #1f3b7110, 0 3px 16px #2a447104;
+  --raised-shadow: 0 12px 35px #202f5c29, 0 2px 5px #202f5c0c;
+  --modal-shadow: 0 22px 75px #1521474d;
+  --backdrop: #15244870;
+  --positive-ink: #0c755e;
+  --positive-surface: #e5f7f0;
+  --positive-dot: #0f9c74;
+  --warning-ink: #9b570b;
+  --warning-surface: #fff1df;
+  --critical-ink: #ac3858;
+  --critical-surface: #fce9ef;
+  --critical-dot: #db5777;
+  --major-ink: #7d42bb;
+  --major-surface: #f2eaff;
+  --hero-bg: radial-gradient(ellipse at 95% 4%, #6579ff 0, transparent 55%), radial-gradient(ellipse at 62% 107%, #4359ed 0, transparent 62%), linear-gradient(110deg, #25349f, #384ad5 61%, #4359eb);
+  --hero-wash: linear-gradient(90deg, #2636aa 0%, #293bbf 28%, #2c3eba25 59%, transparent 81%);
+  --hero-wash-mobile: linear-gradient(90deg, #2636aa 0%, #293bbfd9 35%, #2c3eba28 75%, transparent 100%);
+  --hero-shadow: 0 5px 17px #263bc326;
+  --map-water: radial-gradient(ellipse, #f9fbff, #f6f8fd);
+  --map-land: #e7edf9;
+  --map-boundary: #fafdff;
+  --map-hub: #455af2;
+  --map-route: #667bff;
+  --map-partner: #576cf5;
+  --map-active: #233bd6;
+  --map-point-outline: #fff;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1424;
+  --paper: #131f34;
+  --raised: #1a2942;
+  --surface-muted: #18263e;
+  --surface-hover: #1d2d48;
+  --topbar-bg: #131f34f4;
+  --ink: #eaf0ff;
+  --text: #c7d4ed;
+  --muted: #abbad4;
+  --subtle: #9aaac4;
+  --hairline: #293a56;
+  --control-border: #384b70;
+  --hover-border: #657ba3;
+  --scroll-thumb: #52688e;
+  --accent: #acb8ff;
+  --accent-hover: #cbd3ff;
+  --accent-soft: #25345c;
+  --accent-soft-hover: #314474;
+  --accent-border: #405689;
+  --focus: #a5b3ff;
+  --primary: #5267df;
+  --primary-gradient: linear-gradient(145deg, #4f64de, #4256cc);
+  --primary-hover: #5468d8;
+  --primary-shadow: 0 3px 10px #050a1759;
+  --shadow: 0 3px 10px #050a192c, 0 8px 25px #050a1919;
+  --raised-shadow: 0 12px 35px #0307108c, 0 2px 5px #03071055;
+  --modal-shadow: 0 22px 75px #030710b3;
+  --backdrop: #040913ac;
+  --positive-ink: #79e1c1;
+  --positive-surface: #153a39;
+  --positive-dot: #49d6ac;
+  --warning-ink: #ffd08f;
+  --warning-surface: #493524;
+  --critical-ink: #ffabc0;
+  --critical-surface: #482a40;
+  --critical-dot: #ff8eae;
+  --major-ink: #d2b3ff;
+  --major-surface: #372b53;
+  --hero-bg: radial-gradient(ellipse at 98% 3%, #465db9 0, transparent 60%), radial-gradient(ellipse at 59% 100%, #243d8a 0, transparent 62%), linear-gradient(108deg, #18295e, #213779 58%, #263f87);
+  --hero-wash: linear-gradient(90deg, #192a61 0%, #1f316d 28%, #20357925 59%, transparent 81%);
+  --hero-wash-mobile: linear-gradient(90deg, #192a61 0%, #1f316dd9 35%, #20357928 75%, transparent 100%);
+  --hero-shadow: 0 7px 26px #040b2255;
+  --map-water: radial-gradient(ellipse at center, #172542, #111d33);
+  --map-land: #2a3d5e;
+  --map-boundary: #192841;
+  --map-hub: #9aaaff;
+  --map-route: #8ea1ff;
+  --map-partner: #7c94ff;
+  --map-active: #c7d2ff;
+  --map-point-outline: #192841;
+}
+
+:root[data-theme="dark"] .brand-logo {
+  /* The image has a gap between the colored symbol and navy lettering. */
+  --wordmark-start: 32.5%;
+}
+
+:root[data-theme="dark"] .brand-logo-art {
+  clip-path: inset(0 calc(100% - var(--wordmark-start)) 0 0);
+  filter: brightness(1.28);
+}
+
+:root[data-theme="dark"] .brand-logo .brand-logo-wordmark {
+  display: block;
+  clip-path: inset(0 0 0 var(--wordmark-start));
+  filter: brightness(0) invert(.95);
+}
+
+:root[data-theme="dark"] .company-logo img {
+  /* Screen blends the inverted paper into the sidebar and keeps the bright strokes. */
+  filter: invert(1) hue-rotate(180deg) brightness(1.22) contrast(1.12);
+  mix-blend-mode: screen;
+}

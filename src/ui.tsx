@@ -35,7 +35,7 @@ export function StatCard({ stat, index }: { stat: Stat; index: number }) {
       {delta != null && <span className={'delta ' + (delta < 0 ? 'down' : 'up')}>{delta < 0 ? <ArrowDown size={12} /> : <ArrowUp size={12} />}{signed(delta)}</span>}
       <span>{note ?? (delta == null ? 'Selected period' : 'vs. prior period')}</span>
     </div>
-    {!!trail?.length && <Sparkline values={trail} color={color ?? '#5368f7'} id={'spark-' + index} />}
+    {!!trail?.length && <Sparkline values={trail} color={color ?? 'var(--focus)'} id={'spark-' + index} />}
   </article>;
 }
 

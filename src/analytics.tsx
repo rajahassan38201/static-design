@@ -2,9 +2,10 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Activity, BarChart3, Clock3, Globe2, Layers3, Network, PhoneIncoming, PhoneOutgoing, Route, Timer } from 'lucide-react';
 import { Donut, HeroMap, Legend, TrafficMap, TrendChart } from './charts';
 import {
-  change, colors, compact, countries, dateLabel, duration, group, industryFactor, number, palette, percentage, selectRecords, signed, sum, timeSeries, valueFor,
+  change, compact, countries, dateLabel, duration, group, industryFactor, number, percentage, selectRecords, signed, sum, timeSeries, valueFor,
   type Filters, type Metric, type Page, type Period, type Range, type RecordGroup,
 } from './data';
+import { useChartTheme } from './theme';
 import { DataTable, Empty, Notice, Panel, Segmented, Select, Stats, type Stat } from './ui';
 
 const periods = ['Hourly', 'Daily', 'Weekly', 'Monthly'] as const;
@@ -30,6 +31,7 @@ function TrendPanel({ rows, range, title = 'Traffic trends' }: Pick<DatasetProps
 }
 
 function SplitPanel({ rows }: { rows: RecordGroup[] }) {
+  const { colors } = useChartTheme();
   const [metric, setMetric] = useState<Metric>('calls');
   const inbound = valueFor(sum(rows.filter(row => row.direction === 'Incoming')), metric);
   const outbound = valueFor(sum(rows.filter(row => row.direction === 'Outgoing')), metric);
@@ -45,6 +47,7 @@ function SplitPanel({ rows }: { rows: RecordGroup[] }) {
 }
 
 function OverviewStats({ rows, previous, range }: DatasetProps) {
+  const { colors } = useChartTheme();
   const series = timeSeries(rows, range, 'Daily', 'calls').series;
   const minutes = timeSeries(rows, range, 'Daily', 'minutes').series;
   const items = [
@@ -62,6 +65,7 @@ function OverviewStats({ rows, previous, range }: DatasetProps) {
 }
 
 function ScopeStats({ rows, previous, range, page }: DatasetProps & { page: Page }) {
+  const { colors } = useChartTheme();
   const total = sum(rows);
   const prior = sum(previous);
   const trail = (metric: Metric) => {
@@ -82,6 +86,7 @@ type Rank = ReturnType<typeof group>;
 function RankPanel({ title, description, data, metric = 'calls', link, onPick, limit = 5, flags = false }: {
   title: string; description: string; data: Rank; metric?: Metric; link?: ReactNode; onPick?: (name: string) => void; limit?: number; flags?: boolean;
 }) {
+  const { palette } = useChartTheme();
   const ordered = [...data].sort((a, b) => valueFor(b, metric) - valueFor(a, metric));
   const max = ordered[0] ? valueFor(ordered[0], metric) : 1;
   return <Panel title={title} description={description} action={link} className="ranking-panel">
@@ -185,6 +190,7 @@ export function CountriesView(props: ViewProps) {
 }
 
 export function OperatorsView(props: ViewProps) {
+  const { palette } = useChartTheme();
   const { rows, range, filters, onCountry } = props;
   const [dimension, setDimension] = useState('LDI operators');
   const [metric, setMetric] = useState<Metric>('calls');
@@ -216,6 +222,7 @@ export function industryRows(rows: RecordGroup[]) {
 }
 
 export function IndustryView({ range, filters }: Pick<ViewProps, 'range' | 'filters'>) {
+  const { colors } = useChartTheme();
   const [period, setPeriod] = useState<Period>('Daily');
   const [source, setSource] = useState('Database');
   const [category, setCategory] = useState<'LDI' | 'Local'>('LDI');

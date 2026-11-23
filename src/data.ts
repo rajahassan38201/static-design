@@ -1,8 +1,3 @@
-export const colors = {
-  incoming: '#4359f5', outgoing: '#10ad94', purple: '#8b55ea', amber: '#e99a28', ink: '#17233d',
-};
-export const palette = ['#495cf5', '#19b29c', '#9060ed', '#fab359', '#61a0fa', '#ee79ae', '#96b1ce'];
-
 export const countries = [
   { name: 'United Kingdom', code: 'GB', prefix: '+44', coords: [-2, 53], volume: 28, carrier: 'BT Global' },
   { name: 'Saudi Arabia', code: 'SA', prefix: '+966', coords: [46, 24], volume: 25, carrier: 'stc' },
