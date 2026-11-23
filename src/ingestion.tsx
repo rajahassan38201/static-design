@@ -105,7 +105,7 @@ export function DataView({ notify, batches, setBatches }: { notify: (message: st
       { label: 'Duplicate rows', value: number(batches.reduce((total, item) => total + item.duplicates, 0)), icon: ClipboardList, tone: 'purple', note: 'Excluded by demo policy' },
     ]} />
     <div className="section-actions"><Segmented label="Data workspace" options={['Import history', 'Reference data'] as const} value={tab} onChange={setTab} /><div className="button-group">
-      <button className="button" onClick={() => downloadCsv('callscope-cdr-sample', fields, sample)}><Download size={16} /> Sample CSV</button>
+      <button className="button" onClick={() => downloadCsv('cdr-sample', fields, sample)}><Download size={16} /> Sample CSV</button>
       <button className="button primary" disabled={busy} onClick={() => uploader.current?.click()}><Upload size={16} /> {busy ? 'Validating…' : 'Validate CSV'}</button>
       <input type="file" accept=".csv,text/csv" ref={uploader} className="sr-only" aria-label="CDR CSV file" tabIndex={-1} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void process(file); }} />
     </div></div>

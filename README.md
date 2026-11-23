@@ -1,6 +1,6 @@
-# CallScope static dashboard
+# Dashboard prototype
 
-CallScope is a React and TypeScript prototype for Pakistan’s international voice traffic dashboard. It uses Vite, Apache ECharts, and a bundled, deterministic dataset. It runs locally or on any static web host.
+This React and TypeScript dashboard prototype uses Vite, Apache ECharts, and a bundled synthetic dataset to demonstrate reporting on Pakistan’s international voice traffic. It runs locally or on any static web host.
 
 ## Run locally
 

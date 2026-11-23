@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  Activity, Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, Menu, Network, PhoneIncoming, PhoneOutgoing, Radio, Route, Scale, ShieldAlert, SlidersHorizontal, X,
+  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, Menu, Network, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, X,
   type LucideIcon,
 } from 'lucide-react';
 import '@fontsource-variable/manrope';
+import voxiaLogo from '../VOXIA Logo.png';
+import ahamsonLogo from '../Ahamson logo.png';
 import './styles.css';
 import { ActiveAlerts, AlertsView, useAlerts } from './alerts';
 import { CountriesView, industryRows, IndustryView, OperatorsView, Overview, TrafficDetails } from './analytics';
@@ -90,7 +92,7 @@ function App() {
     document.addEventListener('keydown', escape);
     return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', escape); };
   }, []);
-  useEffect(() => { document.title = current.title + ' | CallScope'; }, [current.title]);
+  useEffect(() => { document.title = current.title; }, [current.title]);
   useEffect(() => {
     if (!drawer) return;
     const desktop = window.matchMedia('(min-width: 901px)');
@@ -119,7 +121,7 @@ function App() {
     return key !== 'operator' || page !== 'transit';
   });
   const exportReport = () => {
-    const filename = 'callscope-' + page + '-' + range.end;
+    const filename = 'traffic-' + page + '-' + range.end;
     if (page === 'industry') {
       const measured = selectRecords(range, { ...filters, country: '' }, 'industry');
       const key = (row: typeof measured[number]) => [row.day, row.ldi, row.operator, row.direction].join('|');
@@ -138,7 +140,9 @@ function App() {
     {drawer && <button className="drawer-overlay" onClick={() => setDrawer(false)} aria-label="Close navigation" />}
     <aside ref={nav} className={'sidebar' + (drawer ? ' is-open' : '')} id="navigation" aria-label="Sidebar">
       <div className="brand-row">
-        <a className="brand" href="#overview" onClick={() => setDrawer(false)}><span className="brand-symbol"><Radio size={23} strokeWidth={2.25} /></span><span><strong>CallScope<span>.</span></strong><small>Voice analytics</small></span></a>
+        <a className="brand" href="#overview" onClick={() => setDrawer(false)}>
+          <span className="brand-logo"><img src={voxiaLogo} alt="VOXIA" width="2172" height="724" /></span>
+        </a>
         <button className="icon-button sidebar-close" aria-label="Close navigation" onClick={() => setDrawer(false)}><X size={20} /></button>
       </div>
       <div className="workspace"><div className="workspace-icon"><span>PK</span></div><div><strong>Pakistan</strong><small>National workspace</small></div></div>
@@ -152,7 +156,9 @@ function App() {
           </a>;
         })}
       </div>)}</nav>
-      <div className="sidebar-footer"><button className="nav-link" onClick={() => { setDrawer(false); setAbout(true); }}><CircleHelp size={18} /> About this demo</button><div className="footer-brand"><Activity size={15} /> CallScope analytics</div></div>
+      <div className="sidebar-footer">
+        <span className="company-logo"><img src={ahamsonLogo} alt="AHamson" width="447" height="447" /></span>
+      </div>
     </aside>
     <div className="main-shell" inert={drawer}>
       <header className="topbar">
@@ -199,11 +205,11 @@ function App() {
           {page === 'alerts' && <AlertsView controller={alerts} notify={notify} />}
           {page === 'data' && <DataView batches={batches} setBatches={setBatches} notify={notify} />}
         </div>
-        <footer className="main-footer"><span>CallScope · Synthetic demonstration data</span><span>Pakistan Standard Time · UTC+5</span></footer>
+        <footer className="main-footer"><span>Synthetic demonstration data</span><span>Pakistan Standard Time · UTC+5</span></footer>
       </main>
     </div>
     {toast && <div className="toast" role="status"><span><Check size={16} /></span>{toast}<button className="icon-button" onClick={() => setToast('')} aria-label="Dismiss message"><X size={16} /></button></div>}
-    {about && <Modal title="About CallScope" description="International voice traffic analytics for Pakistan." close={() => setAbout(false)}>
+    {about && <Modal title="About this demo" description="A dashboard for Pakistan’s international voice traffic." close={() => setAbout(false)}>
       <div className="about-copy"><p>The dashboards, operator assignments, PTA comparison, and alarms use synthetic data. Use the reporting period and traffic filters to explore the sample network.</p><p>In the data workspace, CSV validation runs locally. Alert rules and alarm states are stored in this browser.</p></div>
       <div className="dialog-actions"><button className="button primary" onClick={() => setAbout(false)}>Done</button></div>
     </Modal>}
