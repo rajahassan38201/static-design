@@ -15,6 +15,8 @@ Use the URL printed by Vite. Run `npm run build` to type-check and generate `dis
 
 ## Demo screens
 
+Sign in with `admin@gmail.com` and `admin123`. The demo session persists across reloads in the same tab. Open the Demo Analyst profile menu to log out. The sign-up screen previews registration.
+
 | Screen | What to try |
 | --- | --- |
 | Executive overview | Date range, dimension filters, call and minute trends, traffic split, country map, operator rankings, and open alarms |
@@ -28,7 +30,7 @@ Use the URL printed by Vite. Run `npm run build` to type-check and generate `dis
 
 Traffic screens export filtered aggregate data as CSV. The demo covers 24 August to 21 November 2026. Hourly charts show a synthetic profile for the final selected day. Times are displayed in Pakistan Standard Time.
 
-Imports validate CSVs locally and keep only counts and row-level issue summaries for the current session. Alert rules and alarm states persist in browser storage. PTA data, database batches, classifications, and operator or carrier assignments are demonstration fixtures. The application has no login, database, external notification transport, or production integrations.
+Imports validate CSVs locally and keep only counts and row-level issue summaries for the current session. Alert rules and alarm states persist in browser storage. PTA data, database batches, classifications, and operator or carrier assignments are demonstration fixtures. Demo sign-in uses a client-side credential check. The application has no production authentication, database, external notification transport, or production integrations.
 
 ## References
 
