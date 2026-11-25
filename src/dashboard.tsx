@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, LogOut, Menu, Network, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, X,
+  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, LogOut, Menu, Network, PanelLeftClose, PanelLeftOpen, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, X,
   type LucideIcon,
 } from 'lucide-react';
 import { ActiveAlerts, AlertsView, useAlerts } from './alerts';
@@ -19,7 +19,17 @@ const sections = [
   { label: 'OPERATIONS', indexes: [5, 6, 7, 8, 9] },
 ];
 const presets = [7, 14, 30, 90];
+const desktopQuery = '(width > 900px)';
+const sidebarStorageKey = 'voxia-sidebar-collapsed';
 type Popup = 'dates' | 'filters' | 'notifications' | 'account' | null;
+
+function readSidebarPreference() {
+  try {
+    return localStorage.getItem(sidebarStorageKey) === 'true';
+  } catch {
+    return false;
+  }
+}
 
 function DatePicker({ value, onApply, close }: { value: Range; onApply: (range: Range) => void; close: () => void }) {
   const [draft, setDraft] = useState(value);
@@ -62,18 +72,29 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
   const [range, setRange] = useState(() => preset(14));
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [popup, setPopup] = useState<Popup>(null);
+  const [desktop, setDesktop] = useState(() => window.matchMedia(desktopQuery).matches);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(readSidebarPreference);
   const [drawer, setDrawer] = useState(false);
   const [about, setAbout] = useState(false);
   const [toast, setToast] = useState('');
   const [batches, setBatches] = useState(initialBatches);
   const alerts = useAlerts();
   const active = alerts.alarms.filter(item => item.status === 'Open').length;
-  const mobileMenu = useRef<HTMLButtonElement>(null);
+  const sidebarOpener = useRef<HTMLButtonElement>(null);
+  const sidebarCloser = useRef<HTMLButtonElement>(null);
+  const moveSidebarFocus = useRef(false);
   const nav = useRef<HTMLElement>(null);
   const toastTimer = useRef<number>(undefined);
   const previous = useMemo(() => selectRecords(previousRange(range), filters, page), [range, filters, page]);
   const rows = useMemo(() => selectRecords(range, filters, page), [range, filters, page]);
   const hasTrafficControls = page !== 'alerts' && page !== 'data';
+  const drawerOpen = !desktop && drawer;
+  const sidebarVisible = desktop ? !sidebarCollapsed : drawerOpen;
+  const showSidebarOpener = !desktop || sidebarCollapsed;
+  const openLabel = desktop ? 'Expand sidebar' : 'Open navigation';
+  const closeLabel = desktop ? 'Collapse sidebar' : 'Close navigation';
+  const OpenSidebarIcon = desktop ? PanelLeftOpen : Menu;
+  const CloseSidebarIcon = desktop ? PanelLeftClose : X;
 
   useEffect(() => {
     setDrawer(false);
@@ -93,18 +114,47 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
   }, []);
   useEffect(() => { document.title = current.title; }, [current.title]);
   useEffect(() => {
-    if (!drawer) return;
-    const desktop = window.matchMedia('(min-width: 901px)');
-    const closeOnDesktop = () => { if (desktop.matches) setDrawer(false); };
-    nav.current?.querySelector<HTMLAnchorElement>('a[aria-current="page"]')?.focus();
-    document.body.classList.add('drawer-open');
-    desktop.addEventListener('change', closeOnDesktop);
-    return () => {
-      desktop.removeEventListener('change', closeOnDesktop);
-      document.body.classList.remove('drawer-open');
-      if (!desktop.matches) mobileMenu.current?.focus({ preventScroll: true });
+    const media = window.matchMedia(desktopQuery);
+    const syncViewport = () => {
+      const focused = document.activeElement;
+      if (focused === sidebarOpener.current || (!media.matches && nav.current?.contains(focused))) {
+        moveSidebarFocus.current = true;
+      }
+      setDesktop(media.matches);
+      if (media.matches) setDrawer(false);
     };
-  }, [drawer]);
+    media.addEventListener('change', syncViewport);
+    syncViewport();
+    return () => media.removeEventListener('change', syncViewport);
+  }, []);
+  useLayoutEffect(() => {
+    if (!moveSidebarFocus.current) return;
+    moveSidebarFocus.current = false;
+    const control = showSidebarOpener ? sidebarOpener : sidebarCloser;
+    control.current?.focus({ preventScroll: true });
+  }, [desktop, showSidebarOpener]);
+  useEffect(() => {
+    if (!drawerOpen) return;
+    document.body.classList.add('drawer-open');
+    const focusFrame = window.requestAnimationFrame(() => {
+      nav.current?.querySelector<HTMLAnchorElement>('a[aria-current="page"]')?.focus();
+    });
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.body.classList.remove('drawer-open');
+      sidebarOpener.current?.focus({ preventScroll: true });
+    };
+  }, [drawerOpen]);
+
+  function changeDesktopSidebar(collapsed: boolean) {
+    moveSidebarFocus.current = true;
+    setSidebarCollapsed(collapsed);
+    try {
+      localStorage.setItem(sidebarStorageKey, String(collapsed));
+    } catch {
+      // The sidebar still toggles when browser storage is unavailable.
+    }
+  }
 
   const notify = (message: string) => {
     window.clearTimeout(toastTimer.current);
@@ -134,15 +184,17 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
   };
   const props = { rows, previous, range, filters, onCountry, page };
 
-  return <div className="app-shell">
+  return <div className={'app-shell' + (sidebarCollapsed ? ' sidebar-collapsed' : '')}>
     <a href="#main-content" className="skip-link" onClick={event => { event.preventDefault(); document.getElementById('main-content')?.focus(); }}>Skip to content</a>
-    {drawer && <button className="drawer-overlay" onClick={() => setDrawer(false)} aria-label="Close navigation" />}
-    <aside ref={nav} className={'sidebar' + (drawer ? ' is-open' : '')} id="navigation" aria-label="Sidebar">
+    {drawerOpen && <button className="drawer-overlay" onClick={() => setDrawer(false)} aria-label="Close navigation" />}
+    <aside ref={nav} className={'sidebar' + (drawerOpen ? ' is-open' : '')} id="navigation" aria-label="Sidebar" inert={!sidebarVisible}>
       <div className="brand-row">
         <a className="brand" href="#overview" onClick={() => setDrawer(false)}>
           <VoxiaLogo />
         </a>
-        <button className="icon-button sidebar-close" aria-label="Close navigation" onClick={() => setDrawer(false)}><X size={20} /></button>
+        {sidebarVisible && <button ref={sidebarCloser} type="button" className={desktop ? 'icon-button sidebar-toggle' : 'icon-button'} aria-label={closeLabel} title={closeLabel} aria-expanded="true" aria-controls="navigation" onClick={() => desktop ? changeDesktopSidebar(true) : setDrawer(false)}>
+          <CloseSidebarIcon size={desktop ? 19 : 20} aria-hidden="true" />
+        </button>}
       </div>
       <div className="workspace"><div className="workspace-icon"><span>PK</span></div><div><strong>Pakistan</strong><small>National workspace</small></div></div>
       <nav aria-label="Dashboard navigation">{sections.map(section => <div className="nav-group" key={section.label}>
@@ -159,10 +211,12 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
         <CompanyLogo />
       </div>
     </aside>
-    <div className="main-shell" inert={drawer}>
+    <div className="main-shell" inert={drawerOpen}>
       <header className="topbar">
         <div className="breadcrumb">
-          <button ref={mobileMenu} className="icon-button mobile-menu" aria-label="Open navigation" aria-expanded={drawer} aria-controls="navigation" onClick={() => setDrawer(true)}><Menu size={23} /></button>
+          {showSidebarOpener && <button ref={sidebarOpener} type="button" className="icon-button sidebar-toggle" aria-label={openLabel} title={openLabel} aria-expanded={drawerOpen} aria-controls="navigation" onClick={() => desktop ? changeDesktopSidebar(false) : setDrawer(true)}>
+            <OpenSidebarIcon size={19} aria-hidden="true" />
+          </button>}
           <span className="crumb-root">Analytics</span><span className="crumb-divider">/</span><strong>{current.label}</strong>
         </div>
         <div className="topbar-actions">

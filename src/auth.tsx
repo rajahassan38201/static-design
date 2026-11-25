@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Activity, ArrowRight, AudioLines, CircleAlert, Globe2, LockKeyhole, Mail, PhoneIncoming, PhoneOutgoing, UserRound, Eye, EyeOff } from 'lucide-react';
+import { Activity, ArrowRight, AudioLines, CircleAlert, LockKeyhole, Mail, PhoneIncoming, PhoneOutgoing, UserRound, Eye, EyeOff } from 'lucide-react';
 import { CompanyLogo, ThemeToggle, VoxiaLogo } from './branding';
 import './auth.css';
 
@@ -61,9 +61,8 @@ function SignUpPreview() {
 function WorkspaceVisual() {
   return <div className="auth-visual">
     <div className="auth-visual-copy">
-      <p><Globe2 size={16} aria-hidden="true" /> Pakistan analytics workspace</p>
-      <h2>Pakistan’s<br /> voice traffic</h2>
-      <p>Explore call volumes, routing, and network alerts across international corridors.</p>
+      <h2>Pakistan's International Voice Traffic Dashboard</h2>
+      <p>Voice traffic analysis platform</p>
     </div>
     <div className="auth-signal-frame" aria-hidden="true">
       <div className="auth-signal">

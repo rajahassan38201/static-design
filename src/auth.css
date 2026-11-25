@@ -114,10 +114,17 @@
   opacity: .52;
 }
 
-.auth-visual-copy p:first-child { display: flex; align-items: center; gap: 8px; color: #eff4ff; font-size: 13px; font-weight: 800; }
-.auth-visual-copy p:first-child svg { color: #a4ffec; }
-.auth-visual-copy h2 { margin-block: clamp(10px, 1.8dvh, 16px); font-size: clamp(32px, min(5.05vw, 9dvh), 82px); font-weight: 850; line-height: .99; letter-spacing: -.06em; }
-.auth-visual-copy p:last-child { max-width: 32ch; color: #edf2ff; font-size: clamp(14px, 1.16vw, 17px); line-height: 1.6; }
+.auth-visual-copy h2 {
+  max-width: 20ch;
+  margin-bottom: clamp(10px, 1.8dvh, 16px);
+  font-size: clamp(29px, min(3.75vw, 7.5dvh), 64px);
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -.05em;
+  text-wrap: balance;
+}
+
+.auth-visual-copy p { color: #edf2ff; font-size: clamp(14px, 1.16vw, 17px); line-height: 1.6; }
 
 .auth-signal-frame {
   display: grid;
