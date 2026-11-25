@@ -38,7 +38,7 @@ function SignInForm({ onLogin }: { onLogin: () => void }) {
       {error && <p id="login-error" className="auth-error" role="alert"><CircleAlert size={16} aria-hidden="true" /> Email or password is incorrect.</p>}
       <button type="submit" className="button primary auth-submit">Sign in <ArrowRight size={17} aria-hidden="true" /></button>
     </form>
-    <p className="auth-alternate">New to AHamson? <a className="text-link" href="#signup">Sign up</a></p>
+    <p className="auth-alternate"><a className="text-link" href="#signup">Sign up</a></p>
   </>;
 }
 
@@ -54,7 +54,7 @@ function SignUpPreview() {
       <div className="auth-input"><LockKeyhole size={17} aria-hidden="true" /><input id="signup-password" type="password" placeholder="Choose a password" /></div>
       <button type="button" className="button primary auth-submit">Create account <ArrowRight size={17} aria-hidden="true" /></button>
     </fieldset>
-    <p className="auth-alternate">Already have demo access? <a className="text-link" href="#login">Sign in</a></p>
+    <p className="auth-alternate">Already have access? <a className="text-link" href="#login">Sign in</a></p>
   </>;
 }
 
