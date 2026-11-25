@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Activity, ArrowRight, AudioLines, CircleAlert, LockKeyhole, Mail, PhoneIncoming, PhoneOutgoing, UserRound, Eye, EyeOff } from 'lucide-react';
-import { CompanyLogo, ThemeToggle, VoxiaLogo } from './branding';
+import { AHamsonLogo, ThemeToggle } from './branding';
 import './auth.css';
 
 const demoEmail = 'admin@gmail.com';
@@ -38,7 +38,7 @@ function SignInForm({ onLogin }: { onLogin: () => void }) {
       {error && <p id="login-error" className="auth-error" role="alert"><CircleAlert size={16} aria-hidden="true" /> Email or password is incorrect.</p>}
       <button type="submit" className="button primary auth-submit">Sign in <ArrowRight size={17} aria-hidden="true" /></button>
     </form>
-    <p className="auth-alternate">New to VOXIA? <a className="text-link" href="#signup">Sign up</a></p>
+    <p className="auth-alternate">New to AHamson? <a className="text-link" href="#signup">Sign up</a></p>
   </>;
 }
 
@@ -80,7 +80,7 @@ function WorkspaceVisual() {
 export function AuthScreen({ signup, onToggleTheme, onLogin }: { signup: boolean; onToggleTheme: () => void; onLogin: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    document.title = (signup ? 'Sign up' : 'Sign in') + ' | VOXIA';
+    document.title = (signup ? 'Sign up' : 'Sign in') + ' | AHamson';
     window.scrollTo({ top: 0 });
     heading.current?.focus({ preventScroll: true });
   }, [signup]);
@@ -88,15 +88,14 @@ export function AuthScreen({ signup, onToggleTheme, onLogin }: { signup: boolean
   return <main className="auth-shell">
     <div className="auth-pane">
       <header className="auth-header">
-        <div className="auth-brand"><VoxiaLogo /></div>
+        <div className="auth-brand"><AHamsonLogo /></div>
         <ThemeToggle onToggle={onToggleTheme} />
       </header>
       <section className="auth-content" aria-labelledby="auth-title">
         <h1 id="auth-title" ref={heading} tabIndex={-1}>{signup ? 'Sign up' : 'Sign in'}</h1>
-        <p className="auth-intro">{signup ? 'Preview registration for the VOXIA workspace.' : 'Access Pakistan’s international voice traffic dashboard.'}</p>
+        <p className="auth-intro">{signup ? 'Preview registration for the AHamson workspace.' : 'Access Pakistan’s international voice traffic dashboard.'}</p>
         {signup ? <SignUpPreview /> : <SignInForm onLogin={onLogin} />}
       </section>
-      <footer className="auth-footer"><CompanyLogo /></footer>
     </div>
     <WorkspaceVisual />
   </main>;

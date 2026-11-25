@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { ActiveAlerts, AlertsView, useAlerts } from './alerts';
 import { CountriesView, industryRows, IndustryView, OperatorsView, Overview, TrafficDetails } from './analytics';
-import { CompanyLogo, ThemeToggle, VoxiaLogo } from './branding';
+import { AHamsonLogo, ThemeToggle } from './branding';
 import { countries, downloadCsv, earliest, emptyFilters, group, latest, ldis, navigation, operators, preset, previousRange, rangeLabel, selectRecords, type Filters, type Page, type Range } from './data';
 import { DataView, initialBatches } from './ingestion';
 import { Modal, Select } from './ui';
@@ -190,7 +190,7 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
     <aside ref={nav} className={'sidebar' + (drawerOpen ? ' is-open' : '')} id="navigation" aria-label="Sidebar" inert={!sidebarVisible}>
       <div className="brand-row">
         <a className="brand" href="#overview" onClick={() => setDrawer(false)}>
-          <VoxiaLogo />
+          <AHamsonLogo />
         </a>
         {sidebarVisible && <button ref={sidebarCloser} type="button" className={desktop ? 'icon-button sidebar-toggle' : 'icon-button'} aria-label={closeLabel} title={closeLabel} aria-expanded="true" aria-controls="navigation" onClick={() => desktop ? changeDesktopSidebar(true) : setDrawer(false)}>
           <CloseSidebarIcon size={desktop ? 19 : 20} aria-hidden="true" />
@@ -207,9 +207,6 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
           </a>;
         })}
       </div>)}</nav>
-      <div className="sidebar-footer">
-        <CompanyLogo />
-      </div>
     </aside>
     <div className="main-shell" inert={drawerOpen}>
       <header className="topbar">

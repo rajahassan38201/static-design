@@ -1,18 +1,12 @@
 import { useContext } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import voxiaLogo from '../VOXIA Logo.png';
 import ahamsonLogo from '../Ahamson logo.png';
 import { ThemeContext } from './theme';
 
-export function VoxiaLogo() {
+export function AHamsonLogo() {
   return <span className="brand-logo">
-    <img className="brand-logo-art" src={voxiaLogo} alt="VOXIA" width="2172" height="724" />
-    <img className="brand-logo-wordmark" src={voxiaLogo} alt="" aria-hidden="true" width="2172" height="724" />
+    <img src={ahamsonLogo} alt="AHamson" width="447" height="447" />
   </span>;
-}
-
-export function CompanyLogo() {
-  return <span className="company-logo"><img src={ahamsonLogo} alt="AHamson" width="447" height="447" /></span>;
 }
 
 export function ThemeToggle({ onToggle }: { onToggle: () => void }) {

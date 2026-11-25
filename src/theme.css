@@ -106,24 +106,8 @@
   --map-point-outline: #192841;
 }
 
-:root[data-theme="dark"] .brand-logo {
-  /* The image has a gap between the colored symbol and navy lettering. */
-  --wordmark-start: 32.5%;
-}
-
-:root[data-theme="dark"] .brand-logo-art {
-  clip-path: inset(0 calc(100% - var(--wordmark-start)) 0 0);
-  filter: brightness(1.28);
-}
-
-:root[data-theme="dark"] .brand-logo .brand-logo-wordmark {
-  display: block;
-  clip-path: inset(0 0 0 var(--wordmark-start));
-  filter: brightness(0) invert(.95);
-}
-
-:root[data-theme="dark"] .company-logo img {
-  /* Screen blends the inverted paper into the sidebar and keeps the bright strokes. */
+:root[data-theme="dark"] .brand-logo img {
+  /* Screen blends away the inverted white background and keeps the logo visible. */
   filter: invert(1) hue-rotate(180deg) brightness(1.22) contrast(1.12);
   mix-blend-mode: screen;
 }
