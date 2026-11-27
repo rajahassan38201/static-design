@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, Globe2, LayoutDashboard, LogOut, Menu, Network, PanelLeftClose, PanelLeftOpen, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, X,
+  Bell, CalendarDays, Check, ChevronDown, CircleHelp, Database, Download, FileDown, Globe2, LayoutDashboard, LogOut, Menu, Network, PanelLeftClose, PanelLeftOpen, PhoneIncoming, PhoneOutgoing, Route, Scale, ShieldAlert, SlidersHorizontal, X,
   type LucideIcon,
 } from 'lucide-react';
 import { ActiveAlerts, AlertsView, useAlerts } from './alerts';
@@ -77,6 +77,7 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
   const [drawer, setDrawer] = useState(false);
   const [about, setAbout] = useState(false);
   const [toast, setToast] = useState('');
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [batches, setBatches] = useState(initialBatches);
   const alerts = useAlerts();
   const active = alerts.alarms.filter(item => item.status === 'Open').length;
@@ -88,6 +89,7 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
   const previous = useMemo(() => selectRecords(previousRange(range), filters, page), [range, filters, page]);
   const rows = useMemo(() => selectRecords(range, filters, page), [range, filters, page]);
   const hasTrafficControls = page !== 'alerts' && page !== 'data';
+  const reportPage = page === 'incoming' || page === 'outgoing' ? page : null;
   const drawerOpen = !desktop && drawer;
   const sidebarVisible = desktop ? !sidebarCollapsed : drawerOpen;
   const showSidebarOpener = !desktop || sidebarCollapsed;
@@ -182,6 +184,19 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
     }
     notify('CSV report downloaded.');
   };
+  const exportPdf = async () => {
+    if (!reportPage || pdfBusy) return;
+    setPdfBusy(true);
+    try {
+      const { downloadTrafficPdf } = await import('./traffic-report');
+      await downloadTrafficPdf(reportPage, range.end, filters);
+      notify('PDF report downloaded.');
+    } catch {
+      notify('Could not prepare the PDF. Please try again.');
+    } finally {
+      setPdfBusy(false);
+    }
+  };
   const props = { rows, previous, range, filters, onCountry, page };
 
   return <div className={'app-shell' + (sidebarCollapsed ? ' sidebar-collapsed' : '')}>
@@ -235,16 +250,17 @@ export default function Dashboard({ hash, onToggleTheme, onLogout }: { hash: str
         </div>
       </header>
       <main className="main-content" id="main-content" tabIndex={-1}>
-        <div className="page-intro">
+        <div className={reportPage ? 'page-intro report-intro' : 'page-intro'}>
           <div><h1>{current.title}</h1><p>{current.description}</p></div>
-          {hasTrafficControls && <div className="toolbar">
+          {hasTrafficControls && <div className={reportPage ? 'toolbar report-toolbar' : 'toolbar'}>
             <div className="popover-anchor" data-popover><button className="button date-button" aria-label={'Date range, ' + rangeLabel(range)} aria-expanded={popup === 'dates'} onClick={() => toggle('dates')}><CalendarDays size={17} /> <span>{rangeLabel(range)}</span><ChevronDown size={15} /></button>
               {popup === 'dates' && <DatePicker value={range} onApply={value => { setRange(value); setPopup(null); }} close={() => setPopup(null)} />}
             </div>
             <div className="popover-anchor" data-popover><button className="button filter-button" aria-expanded={popup === 'filters'} onClick={() => toggle('filters')}><SlidersHorizontal size={17} /> Filters {applied.length > 0 && <span className="filter-count">{applied.length}</span>}</button>
               {popup === 'filters' && <FilterPicker value={filters} page={page} onApply={value => { setFilters(value); setPopup(null); }} />}
             </div>
-            <button className="button primary export-button" onClick={exportReport}><Download size={17} /> Export</button>
+            <button className={reportPage ? 'button' : 'button primary export-button'} aria-label={reportPage ? 'Download CSV' : undefined} onClick={exportReport}><Download size={17} aria-hidden="true" /> {reportPage ? 'CSV' : 'Export'}</button>
+            {reportPage && <button className="button primary export-button" onClick={exportPdf} disabled={pdfBusy}><FileDown size={17} aria-hidden="true" /> {pdfBusy ? 'Preparing PDF…' : 'Download PDF'}</button>}
           </div>}
         </div>
         {hasTrafficControls && applied.length > 0 && <div className="active-filters" aria-label="Applied filters">

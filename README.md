@@ -28,9 +28,9 @@ Sign in with `admin@gmail.com` and `admin123`. The demo session persists across 
 | Alerts | Create or edit a KPI rule, evaluate demo rules, filter alarm history, and close an open alarm |
 | Data quality | Download and re-upload the sample CSV to reproduce two accepted records, one rejected row, and one duplicate. Inspect batch reports and reference data |
 
-Traffic screens export filtered aggregate data as CSV. The demo covers 24 August to 21 November 2026. Hourly charts show a synthetic profile for the final selected day. Times are displayed in Pakistan Standard Time.
+Traffic screens export filtered aggregate data as CSV. Incoming and outgoing traffic also offer a one-page LDI minutes PDF for the final selected day and active filters. It compares each licensee's minutes with the same weekday last week and with the preceding 7- and 30-day daily averages. The roster follows the supplied 13 May 2025 list of 19 LDI and two integrated licensees. All minutes are synthetic. The demo covers 24 August to 27 November 2026. Hourly charts show a synthetic profile for the final selected day. Times are displayed in Pakistan Standard Time.
 
-Imports validate CSVs locally and keep only counts and row-level issue summaries for the current session. Alert rules and alarm states persist in browser storage. PTA data, database batches, classifications, and operator or carrier assignments are demonstration fixtures. Demo sign-in uses a client-side credential check. The application has no production authentication, database, external notification transport, or production integrations.
+The synthetic traffic generator combines a weekly demand cycle with variations by route, direction, operator, and call duration. Dashboard charts and exports use the same generated records. Imports validate CSVs locally and keep only counts and row-level issue summaries for the current session. Alert rules and alarm states persist in browser storage. PTA data, database batches, classifications, and operator or carrier assignments are demonstration fixtures. Demo sign-in uses a client-side credential check. The application has no production authentication, database, external notification transport, or production integrations.
 
 ## References
 
